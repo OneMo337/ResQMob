@@ -37,8 +37,24 @@ export const TABLES = {
 // Helper function to check if Supabase is properly configured
 export const isSupabaseConfigured = () => {
   return supabaseUrl !== 'https://your-project-id.supabase.co' && 
-         supabaseAnonKey !== 'your-anon-key';
+         supabaseAnonKey !== 'your-anon-key' &&
+         supabaseUrl.includes('.supabase.co') &&
+         supabaseAnonKey.length > 50;
 };
 
 // Demo mode fallback for when Supabase is not configured
 export const isDemoMode = () => !isSupabaseConfigured();
+
+// Test connection function
+export const testSupabaseConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('users').select('count').limit(1);
+    if (error) throw error;
+    return { success: true, message: 'Connected to Supabase successfully' };
+  } catch (error) {
+    return { 
+      success: false, 
+      message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}` 
+    };
+  }
+};
